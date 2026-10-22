@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>쓰기 수행평가 안내판</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a2e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap">
 <style>
@@ -38,7 +42,7 @@
   }
   /* Fixed 1920x1080 stage, scaled to fit any screen so proportions never change */
   #stage {
-    width: 1920px;
+    width: 1920px;   /* resized by script to match the real screen aspect */
     height: 1080px;
     flex: none;
     display: flex;
@@ -90,6 +94,8 @@
     display: grid;
     grid-template-columns: 44fr 56fr;
   }
+  #stage.portrait main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  #stage.portrait .notice { border-right: 0; border-bottom: 1px solid var(--line); }
 
   /* Notice */
   .notice {
@@ -594,14 +600,30 @@
   }
   tickClock(); setInterval(tickClock, 1000);
 
-  // Scale the 1920x1080 stage to fit the window
+  // Stage fills the real screen: its aspect follows the viewport (16:9 TV, 16:10 / 4:3 tablet),
+  // its content is designed at 1080px height and scaled, so mirroring never leaves bars or clips.
   const stage = document.getElementById('stage');
+  const mainEl = document.querySelector('main');
   function fit() {
-    const w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
-    stage.style.transform = 'scale(' + Math.min(w / 1920, h / 1080) + ')';
+    const vv = window.visualViewport;
+    const w = Math.round(vv ? vv.width : document.documentElement.clientWidth);
+    const h = Math.round(vv ? vv.height : document.documentElement.clientHeight);
+    if (!w || !h) return;
+    const ar = w / h, portrait = ar < 1;
+    const W = portrait ? 1080 : Math.round(1080 * ar);
+    const H = portrait ? Math.round(1080 / ar) : 1080;
+    stage.classList.toggle('portrait', portrait);
+    stage.style.width = W + 'px';
+    stage.style.height = H + 'px';
+    stage.style.transform = 'scale(' + (w / W) + ')';
+    // Narrower-than-16:9 screens: shrink the content a little so nothing is clipped
+    mainEl.style.zoom = portrait ? Math.min(1, H / 2000) : Math.min(1, W / 1920);
   }
-  fit(); window.addEventListener('resize', fit);
-  document.addEventListener('fullscreenchange', fit);
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', () => setTimeout(fit, 300));
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', () => setTimeout(fit, 100));
 
   render();
 })();
