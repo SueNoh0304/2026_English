@@ -149,6 +149,9 @@
   }
   .group ol li.danger { color: var(--danger); font-weight: 700; }
   .group ol li em { font-style: normal; color: var(--warn); font-weight: 700; }
+  .group ol li .big-o { font-size: 1.45em; line-height: 1; vertical-align: -.08em; font-weight: 900; }
+  .group ol li .ex { display: inline-block; padding: 0 .25em; font-weight: 700; color: var(--fg); }
+  .group ol li .ex.circ { display: inline-flex; align-items: center; justify-content: center; width: 1.7em; height: 1.7em; padding: 0; margin: 0 .2em; border: 4px solid var(--warn); border-radius: 50%; font-size: 1.4em; line-height: 1; vertical-align: middle; }
 
   .notice-foot {
     display: flex;
@@ -354,6 +357,7 @@
         <h2>형식 관련</h2>
         <ol>
           <li>문장 앞에 번호 매기기</li>
+          <li>해당 문법 요소 번호에 <em class="big-o">O</em> 치기<small>예) 문장 번호 <span class="ex">1.</span> <span class="ex circ">2.</span> <span class="ex">3.</span> → 2번 문장에 문법 요소 사용</small></li>
           <li>우측에 구조(서론 · 근거1 · 근거2 · 근거3 · 결론) 표시 여부 확인</li>
           <li>한 문장은 <em>7단어 이상</em> (6단어 이하의 문장은 인정하지 않음)</li>
           <li class="danger">부정행위 절대 금지</li>
